@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="twitter-commons" />
+        <module name="twitter-main" />
+        <module name="twitter-nlp" />
+        <module name="twitter-rest" />
+        <module name="twitter-scrape" />
+        <module name="twitter-security" />
+        <module name="twitter-trends" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="twitter-commons" target="1.8" />
+      <module name="twitter-config" target="1.8" />
+      <module name="twitter-core" target="1.5" />
+      <module name="twitter-dependencies" target="1.5" />
+      <module name="twitter-login" target="1.8" />
+      <module name="twitter-main" target="1.8" />
+      <module name="twitter-nlp" target="1.8" />
+      <module name="twitter-parent" target="1.8" />
+      <module name="twitter-rest" target="1.8" />
+      <module name="twitter-scrape" target="1.8" />
+      <module name="twitter-security" target="1.8" />
+      <module name="twitter-spark" target="1.8" />
+      <module name="twitter-test" target="1.8" />
+      <module name="twitter-trends" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
