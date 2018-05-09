@@ -1,74 +1,98 @@
 import src.config as cfg
-import matplotlib.pyplot as plt
-import pandas as pd
-from matplotlib.pyplot import *
-from sklearn import metrics
 from sklearn.metrics import accuracy_score, confusion_matrix
-from sklearn.naive_bayes import GaussianNB
+from pyspark.ml.classification import NaiveBayes
+from pyspark.sql import SQLContext
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.feature import StandardScaler
+from pyspark.ml import Pipeline
+from pyspark.sql.functions import *
 
-warnings.filterwarnings('ignore')
 
 cfg.dir
 
-pd.set_option('display.max_colwidth', 30000)
-
-columns_header = ['Retweets', 'Favorites', 'New_Feature', 'Class']
-
-cols = ['Class']
-mycol = ['Retweets', 'Favorites', 'New_Feature']
+features = ["Retweets", "Favorites", "New_Feature"]  # Class is label
 
 
 class NbClassifier:
 
-    def __init__(self, file_name):
-        self.train_file = pd.read_csv(file_name, sep=",", usecols=columns_header, index_col=None)
+    def __init__(self, file_name, spark_context):
+        self.sqlContext = SQLContext(spark_context)
 
-        train_data = np.array(self.train_file.values[:, :3])
-        train_data_labels = self.train_file['Class']
+        self.data = self.sqlContext.read.options(header='true', inferschema='true', delimiter=',').csv(file_name)
 
-        # init the model
-        self.NB = GaussianNB()
-        self.NB.fit(train_data, train_data_labels)
+        self.data.cache()
 
-        self.accuracy = 0
+        lr_data = self.data.select(col("Class").alias("label"), *features)
 
-    def classify_testdata(self, testing_file):
-        self.test_file = pd.read_csv(testing_file, sep=',', usecols=columns_header, index_col=None)
-        self.test_data = np.array(self.test_file.values[:, :3])
-        self.test_data_predicted_label = self.NB.predict(self.test_data)
-        return self.test_data_predicted_label
+        vectorAssembler = VectorAssembler(inputCols=features, outputCol="unscaled_features")
+
+        standardScaler = StandardScaler(inputCol="unscaled_features", outputCol="features")
+
+        self.nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
+
+        stages = [vectorAssembler, standardScaler, self.nb]
+
+        pipeline = Pipeline(stages=stages)
+
+        self.model = pipeline.fit(lr_data)
+
+    def classify_testdata(self, filename):
+        """
+          Function that classifies the testing dataset
+          :param filename: The filename that contains the testing dataset
+          :return: The predicted labels for the testing dataset
+        """
+        self.test_file = self.sqlContext.read.format('csv').options(header='true', inferschema='true').load(filename)
+
+        lr_data = self.test_file.select(col("Class").alias("label"), *features)
+
+        prediction = self.model.transform(lr_data)
+
+        return prediction
 
     def classify(self, x):
-        output = self.NB.predict(x)
-        probability = self.NB.predict_proba(x)
-        return output, probability
-
-    def plot(self):
-        color = ['red' if label == 1 else 'green' for label in self.train_file['Class']]
-        color_test = ['black' if label == 1 else 'blue' for label in self.test_data_predicted_label]
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(self.train_file['Retweets'], self.train_file['Favorites'], self.train_file['New_Feature'],
-                   zdir='z', s=20, depthshade=True, color=color, marker='^')
-        ax.scatter(self.test_file['Retweets'], self.test_file['Favorites'], self.test_file['New_Feature'],
-                   zdir='z', s=20, depthshade=True, color=color_test, marker='^')
-        plt.title("NB Classifier")
-        ax.set_xlabel('X axis')
-        ax.set_ylabel('Y axis')
-        ax.set_zlabel('Z axis')
-        ax.legend(loc=2)
-        plt.show()
+        """
+        Function that classifies an entry
+        :param x: Entry to be predicted
+        :return: The predicted label
+        """
+        output = self.model.fit(x)
+        return output
 
     def confusion_matrix(self, predict):
-        accuracy = accuracy_score(self.test_file['Class'], predict)
+        """
+        Function that computes confusion matrix to evaluate the accuracy of the classification
+        :param predict: The predicted labels that is used to compute the confusion matrix
+        :return: The confusion matrix
+        """
+        predict_list = [i.prediction for i in predict.select("prediction").collect()]
+        test_class = [i.Class for i in self.test_file.select("Class").collect()]  # self.test_file['Class']
+        accuracy = accuracy_score(test_class, predict_list)
         accuracy = accuracy * 100
         print("############################NB############################")
         print("Accuracy for NB " + str(accuracy))
-        print()
-        print("Confusion Matrix for KNN")
-        print(confusion_matrix(self.test_file['Class'], predict))
+        print("Confusion Matrix for NB")
+        print(confusion_matrix(test_class, predict_list))
         print("##########################################################")
         return accuracy
+
+    # def plot(self):
+    #     import matplotlib.pyplot as plt
+    #     from matplotlib.pyplot import *
+    #     color = ['red' if label == 1 else 'green' for label in self.train_file['Class']]
+    #     color_test = ['black' if label == 1 else 'blue' for label in self.test_data_predicted_label]
+    #     fig = plt.figure()
+    #     ax = fig.add_subplot(111, projection='3d')
+    #     ax.scatter(self.train_file['Retweets'], self.train_file['Favorites'], self.train_file['New_Feature'],
+    #                zdir='z', s=20, depthshade=True, color=color, marker='^')
+    #     ax.scatter(self.test_file['Retweets'], self.test_file['Favorites'], self.test_file['New_Feature'],
+    #                zdir='z', s=20, depthshade=True, color=color_test, marker='^')
+    #     plt.title("NB Classifier")
+    #     ax.set_xlabel('X axis')
+    #     ax.set_ylabel('Y axis')
+    #     ax.set_zlabel('Z axis')
+    #     ax.legend(loc=2)
+    #     plt.show()
 
 
 if __name__ == "__main__":

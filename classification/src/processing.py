@@ -4,7 +4,6 @@ from string import whitespace
 import src.config as cfg
 import pandas as pd
 
-warnings.filterwarnings("ignore")
 
 cfg.dir
 pd.set_option('display.max_colwidth', 30000)

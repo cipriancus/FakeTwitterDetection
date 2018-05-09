@@ -1,4 +1,4 @@
 import os
 
-path = "C:\\Users\\ciprian.cusmuliuc\\Documents\\Git\\FakeTwitterDetection\\classification\\processed"
+path = "/home/ciprian/Desktop/classification/processed"
 dir = os.chdir(path)

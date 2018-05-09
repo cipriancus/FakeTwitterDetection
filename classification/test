@@ -1,0 +1,10 @@
+##############################KNN##############################################
+    knn_time=time.time()
+
+    knn_classifier = knn.KNNClassifier(training_file_location)
+    knn_predict_test_data_class = knn_classifier.classify_testdata(testing_file_location)
+    accuracy_knn = knn_classifier.confusion_matrix(knn_predict_test_data_class)
+    knn_classifier.plot()
+
+    print("KNN EXECUTION TIME "+str(time.time()-knn_time))
+    ##############################################################################
