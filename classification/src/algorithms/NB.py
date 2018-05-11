@@ -18,6 +18,8 @@ class NbClassifier:
     def __init__(self, file_name, spark_context):
         self.sqlContext = SQLContext(spark_context)
 
+        self.spark_context = spark_context
+
         self.data = self.sqlContext.read.options(header='true', inferschema='true', delimiter=',').csv(file_name)
 
         self.data.cache()
@@ -56,8 +58,13 @@ class NbClassifier:
         :param x: Entry to be predicted
         :return: The predicted label
         """
-        output = self.model.fit(x)
-        return output
+
+        x["Retweets"] = int(x["Retweets"])
+        x["Favorites"] = float(x["Favorites"])
+
+        data_frame = self.sqlContext.createDataFrame([x])
+        output = self.model.transform(data_frame)
+        return output.select(col("prediction")).collect()[0].prediction
 
     def confusion_matrix(self, predict):
         """

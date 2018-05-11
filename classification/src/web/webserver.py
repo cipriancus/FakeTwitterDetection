@@ -1,24 +1,21 @@
 from flask import Flask, request
 from src.processing import *
 from src.algorithms.SVM import SVMClassifier
-import numpy as np
+from pyspark import SparkContext
 
 app = Flask(__name__)
 
 training_file_location = 'Training_feature_extracted.csv'
 preprocessing = PreProcessing()
-svmClassifier = SVMClassifier(training_file_location)
+spark_context = SparkContext("local", "Twitter");
+svmClassifier = SVMClassifier(training_file_location,spark_context)
 
 
 @app.route("/classification", methods=['POST'])
 def classification():
     tweet = {key: str(value) for key, value in request.values.items()}
-    #print(tweet)
     processed_tweet = preprocessing.process_tweet(tweet)
-    #print(processed_tweet)
-    value_to_classify = np.array([float(value) for value in processed_tweet.values()]).reshape(1, 3)
-    #print(value_to_classify)
-    output = svmClassifier.classify(value_to_classify)
+    output = svmClassifier.classify(processed_tweet)
 
     return "Spam" if output == 1 else "Not Spam"
 

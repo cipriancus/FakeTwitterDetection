@@ -1,3 +1,4 @@
+import time
 import requests
 
 data = {
@@ -11,6 +12,8 @@ data = {
     "Favorites": "53.0"
 }
 
+start_time = time.time()
 response = requests.post("http://127.0.0.1:5000/classification", data=data)
 response_content = response.content.decode('ascii')
 print(response_content)
+print(time.time() - start_time)

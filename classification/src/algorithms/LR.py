@@ -1,22 +1,19 @@
 import src.config as cfg
 from sklearn.metrics import accuracy_score, confusion_matrix
-from pyspark.ml.classification import RandomForestClassifier
+from pyspark.ml.classification import NaiveBayes
 from pyspark.sql import SQLContext
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.feature import StandardScaler
 from pyspark.ml import Pipeline
 from pyspark.sql.functions import *
 
+
 cfg.dir
 
 features = ["Retweets", "Favorites", "New_Feature"]  # Class is label
-RANDOM_SEED = 13579
-TRAINING_DATA_RATIO = 0.7
-RF_NUM_TREES = 3
-RF_MAX_DEPTH = 4
-RF_MAX_BINS = 32
 
-class RFClassifier:
+
+class LogisticRegressionClassifier:
 
     def __init__(self, file_name, spark_context):
         self.sqlContext = SQLContext(spark_context)
@@ -33,7 +30,7 @@ class RFClassifier:
 
         standardScaler = StandardScaler(inputCol="unscaled_features", outputCol="features")
 
-        self.nb = RandomForestClassifier(numTrees=10)
+        self.nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
 
         stages = [vectorAssembler, standardScaler, self.nb]
 
@@ -69,6 +66,7 @@ class RFClassifier:
         output = self.model.transform(data_frame)
         return output.select(col("prediction")).collect()[0].prediction
 
+
     def confusion_matrix(self, predict):
         """
         Function that computes confusion matrix to evaluate the accuracy of the classification
@@ -80,8 +78,8 @@ class RFClassifier:
         accuracy = accuracy_score(test_class, predict_list)
         accuracy = accuracy * 100
         print("############################NB############################")
-        print("Accuracy for RF " + str(accuracy))
-        print("Confusion Matrix for RF")
+        print("Accuracy for NB " + str(accuracy))
+        print("Confusion Matrix for NB")
         print(confusion_matrix(test_class, predict_list))
         print("##########################################################")
         return accuracy
