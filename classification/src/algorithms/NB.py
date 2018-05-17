@@ -6,7 +6,12 @@ from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.feature import StandardScaler
 from pyspark.ml import Pipeline
 from pyspark.sql.functions import *
-
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import *
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import *
+from mpl_toolkits.mplot3d import Axes3D
+import pandas as pd
 
 cfg.dir
 
@@ -24,7 +29,7 @@ class NbClassifier:
 
         self.data.cache()
 
-        lr_data = self.data.select(col("Class").alias("label"), *features)
+        self.lr_data = self.data.select(col("Class").alias("label"), *features)
 
         vectorAssembler = VectorAssembler(inputCols=features, outputCol="unscaled_features")
 
@@ -36,7 +41,7 @@ class NbClassifier:
 
         pipeline = Pipeline(stages=stages)
 
-        self.model = pipeline.fit(lr_data)
+        self.model = pipeline.fit(self.lr_data)
 
     def classify_testdata(self, filename):
         """
@@ -83,23 +88,35 @@ class NbClassifier:
         print("##########################################################")
         return accuracy
 
-    # def plot(self):
-    #     import matplotlib.pyplot as plt
-    #     from matplotlib.pyplot import *
-    #     color = ['red' if label == 1 else 'green' for label in self.train_file['Class']]
-    #     color_test = ['black' if label == 1 else 'blue' for label in self.test_data_predicted_label]
-    #     fig = plt.figure()
-    #     ax = fig.add_subplot(111, projection='3d')
-    #     ax.scatter(self.train_file['Retweets'], self.train_file['Favorites'], self.train_file['New_Feature'],
-    #                zdir='z', s=20, depthshade=True, color=color, marker='^')
-    #     ax.scatter(self.test_file['Retweets'], self.test_file['Favorites'], self.test_file['New_Feature'],
-    #                zdir='z', s=20, depthshade=True, color=color_test, marker='^')
-    #     plt.title("NB Classifier")
-    #     ax.set_xlabel('X axis')
-    #     ax.set_ylabel('Y axis')
-    #     ax.set_zlabel('Z axis')
-    #     ax.legend(loc=2)
-    #     plt.show()
+    def plot(self, predict):
+
+        columns_header = ['Retweets', 'Favorites', 'New_Feature', 'Class']
+
+        testing_file_location = 'Test_feature_extracted.csv'
+        training_file_location = 'Training_feature_extracted.csv'
+
+        train_file = pd.read_csv(training_file_location, sep=",", usecols=columns_header, index_col=None)
+        test_file = pd.read_csv(testing_file_location, sep=',', usecols=columns_header, index_col=None)
+
+
+        train = [i.label for i in self.lr_data.select("label").collect()]
+        test_class = [i.prediction for i in predict.select("prediction").collect()]
+
+        color = ['red' if label == 1 else 'green' for label in train]
+        color_test = ['black' if label == 1 else 'blue' for label in test_class]
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.scatter(train_file['Retweets'], train_file['Favorites'], train_file['New_Feature'],
+                   zdir='z', s=20, depthshade=True, color=color, marker='^')
+        ax.scatter(test_file['Retweets'], test_file['Favorites'], test_file['New_Feature'],
+                   zdir='z', s=20, depthshade=True, color=color_test, marker='^')
+        plt.title("NB Classifier")
+        ax.set_xlabel('Retweets axis')
+        ax.set_ylabel('Favorites axis')
+        ax.set_zlabel('Feature axis')
+        ax.legend(loc=2)
+        plt.show()
 
 
 if __name__ == "__main__":

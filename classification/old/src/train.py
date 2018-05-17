@@ -7,8 +7,8 @@ import time
 
 cfg.dir
 
-testing_file_location = 'Test_feature_extracted.csv'
-training_file_location = 'Training_feature_extracted.csv'
+testing_file_location = 'Training_feature_extracted.csv'
+training_file_location = 'Test_feature_extracted.csv'
 
 if __name__ == "__main__":
     start_time=time.time()

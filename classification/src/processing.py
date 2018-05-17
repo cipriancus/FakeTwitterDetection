@@ -73,9 +73,6 @@ class PreProcessing(object):
         except ValueError:
             print("Values are not in date format")
 
-        self.Data_preprocessed_file = self.Data_preprocessed_file[
-            (self.Data_preprocessed_file['Date'] > '2011-07-31 23:59:59') & (
-                    self.Data_preprocessed_file['Date'] < '2011-08-30 00:00:00')]
         self.Data_preprocessed_file['Tweet_Text'] = self.Data_preprocessed_file['Tweet_Text'].astype(str)
         self.Data_preprocessed_file['Tweet_length'] = self.Data_preprocessed_file['Tweet_Text'].map(
             lambda x: len(x.translate(str.maketrans('', '', whitespace))))

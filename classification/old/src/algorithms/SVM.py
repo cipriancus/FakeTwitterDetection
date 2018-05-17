@@ -87,6 +87,7 @@ class SVMClassifier(object):
         ax.set_xlabel('X axis')
         ax.set_ylabel('Y axis')
         ax.set_zlabel('Z axis')
+        ax.view_init(azim=-90,elev=0)
         ax.legend(loc=2)
         plt.show()
 

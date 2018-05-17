@@ -5,6 +5,7 @@ import src.algorithms.SVM as svm
 import src.algorithms.NB as nb
 import time
 import src.algorithms.RandomForest as rf
+import matplotlib._version
 
 cfg.dir
 
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     svm_classifier = svm.SVMClassifier(training_file_location,spark_context)
     svm_predict_test_data_class = svm_classifier.classify_testdata(testing_file_location)
     accuracy_svm = svm_classifier.confusion_matrix(svm_predict_test_data_class)
-
+    svm_classifier.plot(svm_predict_test_data_class)
     print("SVM EXECUTION TIME " + str(time.time() - svm_time))
     ##############################################################################
 
@@ -40,7 +41,7 @@ if __name__ == "__main__":
     nb_classifier = nb.NbClassifier(training_file_location,spark_context)
     nb_predict_test_data_class = nb_classifier.classify_testdata(testing_file_location)
     accuracy_nb = nb_classifier.confusion_matrix(nb_predict_test_data_class)
-
+    nb_classifier.plot(nb_predict_test_data_class)
     print("NB EXECUTION TIME " + str(time.time() - nb_time))
     ##############################################################################
 
@@ -53,4 +54,5 @@ if __name__ == "__main__":
 
     print("RF EXECUTION TIME " + str(time.time() - rf_time))
     ##############################################################################
+
     print("Total Execution time is " + str(time.time() - start_time))
