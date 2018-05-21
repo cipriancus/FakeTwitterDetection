@@ -18,10 +18,10 @@ if __name__ == "__main__":
     start_time = time.time()
 
     ###############################################################################
-    training_data = prp.PreProcessing('../data/RawTrainingDataSet.csv', 'Training')
+    training_data = prp.PreProcessing('../data/training_dataset.csv', 'Training')
     training_data.process()
 
-    test_data = prp.PreProcessing('../data/RawTestDataSet.csv', 'Test')
+    test_data = prp.PreProcessing('../data/test_dataset.csv', 'Test')
     test_data.process()
     ###############################################################################
 
@@ -35,6 +35,18 @@ if __name__ == "__main__":
     print("SVM EXECUTION TIME " + str(time.time() - svm_time))
     ##############################################################################
 
+
+    ##############################RF###############################################
+    rf_time = time.time()
+
+    rf_classifier = rf.RFClassifier(training_file_location, spark_context)
+    rf_predict_test_data_class = rf_classifier.classify_testdata(testing_file_location)
+    accuracy_rf = rf_classifier.confusion_matrix(rf_predict_test_data_class)
+    rf_classifier.plot(rf_predict_test_data_class)
+
+    print("RF EXECUTION TIME " + str(time.time() - rf_time))
+    ##############################################################################
+
     ##############################NB###############################################
     nb_time = time.time()
 
@@ -43,16 +55,6 @@ if __name__ == "__main__":
     accuracy_nb = nb_classifier.confusion_matrix(nb_predict_test_data_class)
     nb_classifier.plot(nb_predict_test_data_class)
     print("NB EXECUTION TIME " + str(time.time() - nb_time))
-    ##############################################################################
-
-    ##############################RF###############################################
-    rf_time = time.time()
-
-    rf_classifier = rf.RFClassifier(training_file_location, spark_context)
-    rf_predict_test_data_class = rf_classifier.classify_testdata(testing_file_location)
-    accuracy_rf = rf_classifier.confusion_matrix(rf_predict_test_data_class)
-
-    print("RF EXECUTION TIME " + str(time.time() - rf_time))
     ##############################################################################
 
     print("Total Execution time is " + str(time.time() - start_time))

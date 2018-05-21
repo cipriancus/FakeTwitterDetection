@@ -169,7 +169,7 @@ class PreProcessing(object):
 
 
 if __name__ == "__main__":
-    training = PreProcessing('../data/RawTrainingDataSet.csv', 'Training')
+    training = PreProcessing('../data/training_dataset.csv', 'Training')
     training.process()
-    test = PreProcessing('../data/RawTestDataSet.csv', 'Test')
+    test = PreProcessing('../data/test_dataset.csv', 'Test')
     test.process()
