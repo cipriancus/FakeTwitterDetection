@@ -32,7 +32,7 @@ Using machine learning, a system capable of different tweet classification ( fak
 *  Scala version 2.11.8
 *  OpenJDK 64-Bit Server VM, 1.8.0_171
 
-( we also tested with 10 workers and very high hardware resources but the results were about the same, no noticeable improvement )
+* we also tested with 10 workers and very high hardware resources but the results were about the same, no noticeable improvement
 
 ## Introduction
 
