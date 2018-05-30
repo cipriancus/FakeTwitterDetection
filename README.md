@@ -14,12 +14,22 @@ Using machine learning, a system capable of different tweet classification ( fak
 * 4 CPU cores
 * 4 GB RAM
 * SSD
+* UBUNTU 16.04 LTS
+* PYTHON 3 
+* PYSPARK version 2.3.0
+* Scala version 2.11.8
+* OpenJDK 64-Bit Server VM, 1.8.0_171
 
 ## GOOGLE SETTINGS:
 *  one DataProc cluster with three machines: one master and two slaves
 *  master n1-standard-2 (2 vCPU, 7.50 GB memory)
 *  worker n1-standard-4 (4 vCPU, 15.0 GB memory)
 *  disk 500 GB
+*  UBUNTU 16.04 LTS
+*  PYTHON 3 
+*  PYSPARK version 2.3.0
+*  Scala version 2.11.8
+*  OpenJDK 64-Bit Server VM, 1.8.0_171
 
 ( we also tested with 10 workers and very high hardware resources but the results were about the same, no noticeable improvement )
 
