@@ -1,13 +1,15 @@
-# TwitterBigDataAnalysis
+# Fake Twitter News Detection
 
-This project will attempt to use capabilities of GAE dataproc cluster and pyspark computing to build as fast as possible classifiers by training various algorthms upon an dataset of tweets.
+Using machine learning, a system capable of different tweet classification ( fake or not ) has been developed.
 
 ## Members
-Coordonator: Petru Rebeja
-   Petru.Rebeja@gmail.com  
-- Cușmuliuc Ciprian   cipriancus@gmail.com
-- Coca Georgiana   cocageorgiana@gmail.com
-- Groza Vasile   vasilegroza3@gmail.com
+Coordonator:
+*Petru Rebeja Petru.Rebeja@gmail.com  
+*Breaban Mihaela
+Studenti:
+*Cușmuliuc Ciprian   cipriancus@gmail.com
+*Coca Georgiana   cocageorgiana@gmail.com
+*Groza Vasile   vasilegroza3@gmail.com
 
 ## Introduction
 
