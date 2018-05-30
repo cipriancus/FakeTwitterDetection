@@ -1,11 +1,10 @@
-# from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix
 from pyspark.ml.classification import RandomForestClassifier
 from pyspark.sql import SQLContext
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.feature import StandardScaler
 from pyspark.ml import Pipeline
 from pyspark.sql.functions import *
-
 
 features = ["Retweets", "Favorites", "New_Feature"]  # Class is label
 RANDOM_SEED = 13579
@@ -14,9 +13,11 @@ RF_NUM_TREES = 3
 RF_MAX_DEPTH = 4
 RF_MAX_BINS = 32
 
+
 class RFClassifier:
 
-    def __init__(self, file_name, spark_context):
+    def __init__(self, file_name, spark_context, maxDepth=5, maxBins=32, minInstancesPerNode=1, minInfoGain=0.0,
+                 maxMemoryInMB=256, impurity="gini", numTrees=20):
         self.sqlContext = SQLContext(spark_context)
 
         self.spark_context = spark_context
@@ -25,13 +26,19 @@ class RFClassifier:
 
         self.data.cache()
 
+        self.settings = [('maxDepth', maxDepth), ('maxBins', maxBins), ('minInstancesPerNode', minInstancesPerNode),
+                         ('minInfoGain', minInfoGain), ('maxMemoryInMB', maxMemoryInMB), ('impurity', impurity),
+                         ('numTrees', numTrees)]
+
         self.lr_data = self.data.select(col("Class").alias("label"), *features)
 
         vectorAssembler = VectorAssembler(inputCols=features, outputCol="unscaled_features")
 
         standardScaler = StandardScaler(inputCol="unscaled_features", outputCol="features")
 
-        self.nb = RandomForestClassifier(numTrees=10)
+        self.nb = RandomForestClassifier(maxDepth=maxDepth, maxBins=maxBins, minInstancesPerNode=minInstancesPerNode,
+                                         minInfoGain=minInfoGain,
+                                         maxMemoryInMB=maxMemoryInMB, impurity=impurity, numTrees=numTrees)
 
         stages = [vectorAssembler, standardScaler, self.nb]
 
@@ -67,22 +74,22 @@ class RFClassifier:
         output = self.model.transform(data_frame)
         return output.select(col("prediction")).collect()[0].prediction
 
-    # def confusion_matrix(self, predict):
-    #     """
-    #     Function that computes confusion matrix to evaluate the accuracy of the classification
-    #     :param predict: The predicted labels that is used to compute the confusion matrix
-    #     :return: The confusion matrix
-    #     """
-    #     predict_list = [i.prediction for i in predict.select("prediction").collect()]
-    #     test_class = [i.Class for i in self.test_file.select("Class").collect()]  # self.test_file['Class']
-    #     accuracy = accuracy_score(test_class, predict_list)
-    #     accuracy = accuracy * 100
-    #     print("############################NB############################")
-    #     print("Accuracy for RF " + str(accuracy))
-    #     print("Confusion Matrix for RF")
-    #     print(confusion_matrix(test_class, predict_list))
-    #     print("##########################################################")
-    #     return accuracy
+    def confusion_matrix(self, predict):
+        """
+        Function that computes confusion matrix to evaluate the accuracy of the classification
+        :param predict: The predicted labels that is used to compute the confusion matrix
+        :return: The confusion matrix
+        """
+        predict_list = [i.prediction for i in predict.select("prediction").collect()]
+        test_class = [i.Class for i in self.test_file.select("Class").collect()]  # self.test_file['Class']
+        accuracy = accuracy_score(test_class, predict_list)
+        accuracy = accuracy * 100
+        print("############################NB############################")
+        print("Accuracy for RF " + str(accuracy) + 'for settings ' + str(self.settings))
+        print("Confusion Matrix for RF")
+        print(confusion_matrix(test_class, predict_list))
+        print("##########################################################")
+        return accuracy
 
     # def plot(self, predict):
     #     columns_header = ['Retweets', 'Favorites', 'New_Feature', 'Class']
@@ -111,6 +118,7 @@ class RFClassifier:
     #     ax.set_zlabel('Feature axis')
     #     ax.legend(loc=2)
     #     plt.show()
+
 
 if __name__ == "__main__":
     print("You are in main")

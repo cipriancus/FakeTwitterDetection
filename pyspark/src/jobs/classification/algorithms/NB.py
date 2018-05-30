@@ -1,4 +1,4 @@
-# from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix
 from pyspark.ml.classification import NaiveBayes
 from pyspark.sql import SQLContext
 from pyspark.ml.feature import VectorAssembler
@@ -12,7 +12,7 @@ features = ["Retweets", "Favorites", "New_Feature"]  # Class is label
 
 class NbClassifier:
 
-    def __init__(self, file_name, spark_context):
+    def __init__(self, file_name, spark_context, smoothing=1.0, modelType="multinomial"):
         self.sqlContext = SQLContext(spark_context)
 
         self.spark_context = spark_context
@@ -21,13 +21,15 @@ class NbClassifier:
 
         self.data.cache()
 
+        self.settings = [('smoothing', smoothing), ('modelType', modelType)]
+
         self.lr_data = self.data.select(col("Class").alias("label"), *features)
 
         vectorAssembler = VectorAssembler(inputCols=features, outputCol="unscaled_features")
 
         standardScaler = StandardScaler(inputCol="unscaled_features", outputCol="features")
 
-        self.nb = NaiveBayes(smoothing=1.0, modelType="multinomial")
+        self.nb = NaiveBayes(smoothing=smoothing, modelType=modelType)
 
         stages = [vectorAssembler, standardScaler, self.nb]
 
@@ -74,7 +76,7 @@ class NbClassifier:
         accuracy = accuracy_score(test_class, predict_list)
         accuracy = accuracy * 100
         print("############################NB############################")
-        print("Accuracy for NB " + str(accuracy))
+        print("Accuracy for NB " + str(accuracy) + ' with settings ' + str(self.settings))
         print("Confusion Matrix for NB")
         print(confusion_matrix(test_class, predict_list))
         print("##########################################################")

@@ -1,4 +1,4 @@
-#from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix
 from pyspark.ml.classification import LinearSVC
 from pyspark.sql import SQLContext
 from pyspark.ml.feature import VectorAssembler
@@ -6,13 +6,13 @@ from pyspark.ml.feature import StandardScaler
 from pyspark.ml import Pipeline
 from pyspark.sql.functions import *
 
-
 features = ["Retweets", "Favorites", "New_Feature"]  # Class is label
 
 
 class SVMClassifier(object):
 
-    def __init__(self, file_name, spark_context):
+    def __init__(self, file_name, spark_context, maxIter=100, regParam=0.0, tol=1e-6, threshold=0.0,
+                 aggregationDepth=2):
         self.sqlContext = SQLContext(spark_context)
 
         self.spark_context = spark_context
@@ -27,7 +27,10 @@ class SVMClassifier(object):
 
         standardScaler = StandardScaler(inputCol="unscaled_features", outputCol="features")
 
-        self.SVM = LinearSVC(maxIter=10, regParam=.01)
+        self.settings = [('maxIter',maxIter), ('regParam',regParam), ('tol',tol), ('threshold',threshold),('aggregationDepth',aggregationDepth)]
+
+        self.SVM = LinearSVC(maxIter=maxIter, regParam=regParam, tol=tol, threshold=threshold,
+                             aggregationDepth=aggregationDepth)
 
         stages = [vectorAssembler, standardScaler, self.SVM]
 
@@ -63,22 +66,22 @@ class SVMClassifier(object):
         output = self.model.transform(data_frame)
         return output.select(col("prediction")).collect()[0].prediction
 
-    # def confusion_matrix(self, predict):
-    #     """
-    #     Function that computes confusion matrix to evaluate the accuracy of the classification
-    #     :param predict: The predicted labels that is used to compute the confusion matrix
-    #     :return: The confusion matrix
-    #     """
-    #     predict_list = [i.prediction for i in predict.select("prediction").collect()]
-    #     test_class = [i.Class for i in self.test_file.select("Class").collect()]  # self.test_file['Class']
-    #     accuracy = accuracy_score(test_class, predict_list)
-    #     accuracy = accuracy * 100
-    #     print("###########################SVM############################")
-    #     print("Accuracy for SVM " + str(accuracy))
-    #     print("Confusion Matrix for SVM")
-    #     print(confusion_matrix(test_class, predict_list))
-    #     print("##########################################################")
-    #     return accuracy
+    def confusion_matrix(self, predict):
+        """
+        Function that computes confusion matrix to evaluate the accuracy of the classification
+        :param predict: The predicted labels that is used to compute the confusion matrix
+        :return: The confusion matrix
+        """
+        predict_list = [i.prediction for i in predict.select("prediction").collect()]
+        test_class = [i.Class for i in self.test_file.select("Class").collect()]  # self.test_file['Class']
+        accuracy = accuracy_score(test_class, predict_list)
+        accuracy = accuracy * 100
+        print("###########################SVM############################")
+        print("Accuracy for SVM " + str(accuracy))
+        print("Confusion Matrix for SVM with settings" + str(self.settings))
+        print(confusion_matrix(test_class, predict_list))
+        print("##########################################################")
+        return accuracy
 
     # def plot(self, predict):
     #     """
