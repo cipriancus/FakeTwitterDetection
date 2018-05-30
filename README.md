@@ -3,8 +3,9 @@
 Using machine learning, a system capable of different tweet classification ( fake or not ) has been developed.
 
 ## Coordonatori:
-* Petru Rebeja Petru.Rebeja@gmail.com  
-* Breaban Mihaela
+* Petru Rebeja petru.rebeja@gmail.com  
+* Breaban Mihaela  pmihaela@info.uaic.ro
+* Adrian Iftene adiftene@info.uaic.ro
 ## Studenti:
 * Cușmuliuc Ciprian   cipriancus@gmail.com
 * Coca Georgiana   cocageorgiana@gmail.com
