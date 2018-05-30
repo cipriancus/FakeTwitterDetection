@@ -10,6 +10,19 @@ Using machine learning, a system capable of different tweet classification ( fak
 * Coca Georgiana   cocageorgiana@gmail.com
 * Groza Vasile   vasilegroza3@gmail.com
 
+## OUR VM SETTINGS:
+* 4 CPU cores
+* 4 GB RAM
+* SSD
+
+## GOOGLE SETTINGS:
+*  one DataProc cluster with three machines: one master and two slaves
+*  master n1-standard-2 (2 vCPU, 7.50 GB memory)
+*  worker n1-standard-4 (4 vCPU, 15.0 GB memory)
+*  disk 500 GB
+
+( we also tested with 10 workers and very high hardware resources but the results were about the same, no noticeable improvement )
+
 ## Introduction
 
 bla bla
