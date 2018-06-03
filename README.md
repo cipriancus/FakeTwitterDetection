@@ -39,8 +39,4 @@ Using machine learning, a system capable of different tweet classification ( fak
 
 Today, using Facebook and Twitter for news information is something usual, users from these networks create a lot of content: posts (with text, images, videos, links), comments, likes, but also redistribution of information with retweet option or with simple copy/paste operations thus a common problem is the detection of fake users or fake news. The present work aims to analyze different techniques of detecting fake news, their performance and how we can do fine tuning in order to improve the actual results.
 
-## Introduction
-
-
-## Proposed solution
 
