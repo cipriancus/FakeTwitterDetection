@@ -24,7 +24,6 @@ except:
     findspark.init()
     import pyspark
 
-__author__ = 'ekampf'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run a PySpark job')

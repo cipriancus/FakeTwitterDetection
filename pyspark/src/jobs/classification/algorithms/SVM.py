@@ -8,7 +8,6 @@ from pyspark.sql.functions import *
 
 features = ["Retweets", "Favorites", "New_Feature"]  # Class is label
 
-
 class SVMClassifier(object):
 
     def __init__(self, file_name, spark_context, maxIter=100, regParam=0.0, tol=1e-6, threshold=0.0,

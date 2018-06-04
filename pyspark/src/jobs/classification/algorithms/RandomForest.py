@@ -7,12 +7,6 @@ from pyspark.ml import Pipeline
 from pyspark.sql.functions import *
 
 features = ["Retweets", "Favorites", "New_Feature"]  # Class is label
-RANDOM_SEED = 13579
-TRAINING_DATA_RATIO = 0.7
-RF_NUM_TREES = 3
-RF_MAX_DEPTH = 4
-RF_MAX_BINS = 32
-
 
 class RFClassifier:
 

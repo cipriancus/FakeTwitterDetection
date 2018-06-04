@@ -4,7 +4,6 @@ from .algorithms import SVM as svm
 from .algorithms import NB as nb
 from .algorithms import RandomForest as rf
 
-__author__ = 'ciprianc'
 
 
 # def analyze(sc):
@@ -132,7 +131,7 @@ def analyze(sc):
     minInfoGain = 0.0
     maxMemoryInMB = 256
     impurity = "gini"
-    numTrees = 20
+    numTrees = 50
 
     settings = [('maxDepth', maxDepth), ('maxBins', maxBins), ('minInstancesPerNode', minInstancesPerNode),
                 ('minInfoGain', minInfoGain),
@@ -153,9 +152,9 @@ def analyze(sc):
     maxBins = 32
     minInstancesPerNode = 1
     minInfoGain = 0.0
-    maxMemoryInMB = 1024
+    maxMemoryInMB = 256
     impurity = "gini"
-    numTrees = 50
+    numTrees = 100
 
     settings = [('maxDepth', maxDepth), ('maxBins', maxBins), ('minInstancesPerNode', minInstancesPerNode),
                 ('minInfoGain', minInfoGain),
